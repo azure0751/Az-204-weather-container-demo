@@ -118,3 +118,79 @@ networks:
 az acr build --registry tinkushuklaregistry --image tinkuhelloacrtasks:v1 .
 ```
 
+## if Deploying both as conatienr group in ACI
+
+Make sure that you have created the yaml file , In the yaml file <a href="ACI-group.yml" target="_blank">ACI-group.yml</a> Backend API is refrenced as  LocalHost url instead of backend container name.
+
+```bash
+apiVersion: 2019-12-01
+location: eastus
+name: my-container-group
+properties:
+  containers:
+  - name: weatherapi
+    properties:
+      image: tinkushuklaregistry.azurecr.io/weather/weatherapi:1.0
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1
+      # internal ports only, do NOT expose in YAML
+      environmentVariables:
+      - name: ASPNETCORE_URLS
+        value: "http://+:80"
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Development
+
+  - name: weatherfront
+    properties:
+      image: tinkushuklaregistry.azurecr.io/weather/weatherfront:1.0
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1
+
+      ports:
+      - port: 8080  # match ipAddress port    
+      environmentVariables:
+      - name: WeatherUrl
+        value: http://localhost:80/weatherforecast  # use Local host instead of container name
+      - name: ASPNETCORE_URLS
+        value: "http://+:8080;http://+:8081"
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Development
+      
+  osType: Linux
+  ipAddress:
+    type: Public
+    dnsNameLabel: myfrontendappqaws
+    ports:
+    - protocol: tcp
+      port: 8080  # expose frontend port 8080 externally
+
+  restartPolicy: Never
+
+  imageRegistryCredentials:
+  - server: tinkushuklaregistry.azurecr.io
+    username: tinkushuklaregistry
+    password: <your ACR credentials>
+```
+
+You can deploy this yaml file using below command
+
+```bash
+az container create --resource-group myResourceGroup --file ACI-group.yml
+```
+
+you can verify that both the container sgould be in Running state  
+  
+![acigroup container running](Images/acigroup-container-running.png)
+
+you can access the running frontend container from the group at http://myfrontendappqaws.eastus.azurecontainer.io:8080/
+
+![running aci group](Images/running-aci-group.png)
+
+
+
+
+

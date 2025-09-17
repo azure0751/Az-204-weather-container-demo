@@ -1,0 +1,52 @@
+apiVersion: 2019-12-01
+location: eastus
+name: my-container-group
+properties:
+  containers:
+  - name: weatherapi
+    properties:
+      image: tinkushuklaregistry.azurecr.io/weather/weatherapi:1.0
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1
+      # internal ports only, do NOT expose in YAML
+      environmentVariables:
+      - name: ASPNETCORE_URLS
+        value: "http://+:80"
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Development
+
+  - name: weatherfront
+    properties:
+      image: tinkushuklaregistry.azurecr.io/weather/weatherfront:1.0
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1
+
+      ports:
+      - port: 8080  # match ipAddress port    
+      environmentVariables:
+      - name: WeatherUrl
+        value: http://localhost:80/weatherforecast  # use container name
+      - name: ASPNETCORE_URLS
+        value: "http://+:8080;http://+:8081"
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Development
+      # internal ports only, do NOT expose in YAML
+
+  osType: Linux
+  ipAddress:
+    type: Public
+    dnsNameLabel: myfrontendappqaws
+    ports:
+    - protocol: tcp
+      port: 8080  # expose frontend port 8080 externally
+
+  restartPolicy: Never
+
+  imageRegistryCredentials:
+  - server: tinkushuklaregistry.azurecr.io
+    username: tinkushuklaregistry
+    password: <your ACR credentials>   
