@@ -21,7 +21,7 @@
 
     logger.LogInformation($"*** Calling: {weatherUrl}");
 
-    var forecast = await httpClient.GetFromJsonAsync<IEnumerable<WeatherForecast>>(weatherUrl);
+    var forecast = await httpClient.GetFromJsonAsync<IEnumerable<WeatherForecast>>("http://rgaci2back.e2dubad4bwh8dfep.eastus.azurecontainer.io:8080/weatherforecast");
 }
 
 <div class="text-center">

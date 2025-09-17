@@ -1,5 +1,5 @@
 # Az-204-weather-container-demo
-
+Both the containers are exposing port : 8080 , make sure you are mapping port 8080 whereever using these images.
 # How this application look like   
 ![howapplicationlooks](Images/howapplicationlooks.png)
 
@@ -111,3 +111,4 @@ networks:
   weather-net:
     driver: bridge
 ```
+
