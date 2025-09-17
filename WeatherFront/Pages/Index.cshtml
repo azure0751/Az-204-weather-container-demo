@@ -1,0 +1,52 @@
+﻿@page
+@model IndexModel
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using WeatherFront.Model
+@inject IHttpClientFactory httpClientFactory
+@inject IConfiguration config
+@inject ILogger<Index> logger
+@{
+    ViewData["Title"] = "Weather";
+    var httpClient = httpClientFactory.CreateClient();
+    // Read directly from environment variable
+    var weatherUrl = Environment.GetEnvironmentVariable("WeatherUrl");
+
+    // Fallback to config if env var not set (optional, good practice)
+    if (string.IsNullOrEmpty(weatherUrl))
+    {
+
+        weatherUrl = config["WeatherUrl"];
+    }
+
+    logger.LogInformation($"*** Calling: {weatherUrl}");
+
+    var forecast = await httpClient.GetFromJsonAsync<IEnumerable<WeatherForecast>>(weatherUrl);
+}
+
+<div class="text-center">
+    <h1 class="display-4">Weather forecast</h1>
+    <div class="container">
+        <div class="row">
+            @foreach (var weather in forecast)
+            {
+                <div class="col">
+                    <div>
+                        <span style="font-size: 72px">@weather.Emoji</span>
+                    </div>
+                    <div>
+                        <span style="font-size: 48px">@weather.TemperatureC&#8451;</span>
+                    </div>
+                    <div>
+                        <span>@weather.Date.ToString("dd MMM")</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@{
+
+
+}

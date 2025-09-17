@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  weatherapi:
+    image: weatherapi:1.0
+    container_name: weatherapi-container
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+    networks:
+      - weather-net
+
+  weatherfront:
+    image: weatherfront:1.0
+    container_name: weatherfront-container
+    ports:
+      - "8090:8080"
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_HOST_PATH=/usr/share/dotnet/dotnet
+      - WeatherUrl=http://weatherapi-container:8080/weatherforecast
+    depends_on:
+      - weatherapi
+    networks:
+      - weather-net
+
+networks:
+  weather-net:
+    driver: bridge
