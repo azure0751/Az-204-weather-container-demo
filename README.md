@@ -14,10 +14,15 @@ docker run -d -p 8090:8080 \
   -e DOTNET_RUNNING_IN_CONTAINER=true \
   -e DOTNET_HOST_PATH=/usr/share/dotnet/dotnet \
   -e "WeatherUrl=http://weatherapi-container:8080/weatherforecast" \
-  --name weatherfronapp1-container \
+  --name weatherfronapp-container \
   weatherfront:1.0
 ```
 
+You can use these two docker images for various scenarios  
+  
+
+
+# 1. If you are running this in WSL environment then use Docker compose
 
 ## Docker Compose file , if you want to Build the docker image and Run the containr
 
@@ -27,6 +32,8 @@ Run the Command  :
 docker-compose up --Build
 ```
 Below is Docker  Compose yaml File <a href="docker-compose.yml" target="_blank">docker-compose.yml</a>
+
+This will create a Docker Network named **weather-net**
 
 ```bash
 version: '3.9'
@@ -112,13 +119,15 @@ networks:
     driver: bridge
 ```
 
-## Building with ACR Build
+# 2. Building with ACR Build
+
+## Build Docker images using Azure ACR Task
 
 ```bash
 az acr build --registry tinkushuklaregistry --image tinkuhelloacrtasks:v1 .
 ```
 
-## if Deploying both as conatienr group in ACI
+# 3.Deploying both as conatienr group in ACI
 
 Make sure that you have created the yaml file , In the yaml file <a href="ACI-group.yml" target="_blank">ACI-group.yml</a> Backend API is refrenced as  LocalHost url instead of backend container name.
 
@@ -190,7 +199,11 @@ you can access the running frontend container from the group at http://myfronten
 
 ![running aci group](Images/running-aci-group.png)
 
+# 4. Deploy Container in Azure Web App
 
+# 5. Deploy container as Azure Container Apps
+
+# 6. Deploy to Azure Kubernetes Cluster
 
 
 
