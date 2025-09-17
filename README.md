@@ -112,3 +112,9 @@ networks:
     driver: bridge
 ```
 
+## Building with ACR Build
+
+```bash
+az acr build --registry tinkushuklaregistry --image tinkuhelloacrtasks:v1 .
+```
+
